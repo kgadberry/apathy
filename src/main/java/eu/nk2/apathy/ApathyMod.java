@@ -6,6 +6,7 @@ import eu.nk2.apathy.context.ApathyMixinEntityTypeAccessor;
 import eu.nk2.apathy.goal.ApathyDoNotActiveTargetGoal;
 import eu.nk2.apathy.goal.ApathyIfBlockBrokenActiveTargetGoal;
 import eu.nk2.apathy.goal.ApathyIfItemSelectedActiveTargetGoal;
+import eu.nk2.apathy.logging.ApathyLogger;
 import eu.nk2.apathy.mixin.*;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.Entity;
@@ -19,8 +20,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
@@ -28,13 +27,11 @@ import java.util.*;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ApathyMod implements ModInitializer {
 
-    private final Logger logger = LogManager.getLogger("Apathy");
-
     private EntityType.EntityFactory<Entity> getEntityFactory(EntityType<Entity> entityType) {
         try {
             return ((ApathyMixinEntityTypeAccessor) entityType).getFactory();
         } catch (Exception e) {
-            logger.error(
+            ApathyLogger.error(
                 "Getting factory for {}: ",
                 entityType,
                 e
@@ -50,7 +47,7 @@ public class ApathyMod implements ModInitializer {
         try {
             ((ApathyMixinEntityTypeAccessor) entityType).apathy$setCustomFactory(entityFactory);
         } catch (Exception e) {
-            logger.error(
+            ApathyLogger.error(
                 "Setting factory for {}: ",
                 entityType,
                 e
@@ -75,7 +72,7 @@ public class ApathyMod implements ModInitializer {
 
             return ((ApathyMixinGoalSelectorAccessor) goalSelector).getGoals();
         } catch (Exception e) {
-            logger.error(
+            ApathyLogger.error(
                 "Getting {} for {}: ",
                 mobEntity,
                 e
@@ -89,7 +86,7 @@ public class ApathyMod implements ModInitializer {
             Class<?> targetClass = ((ApathyMixinActiveTargetGoalAccessor) followTargetGoal).getTargetClass();
             return targetClass.equals(PlayerEntity.class);
         } catch (Exception e) {
-            logger.error(
+            ApathyLogger.error(
                 "For {}: ",
                 followTargetGoal,
                 e
@@ -108,7 +105,7 @@ public class ApathyMod implements ModInitializer {
         ApathyMixinActiveTargetGoalAccessor followTargetGoalAccessor = (ApathyMixinActiveTargetGoalAccessor) followTargetGoal;
         ApathyMixinTrackTargetGoalAccessor trackTargetGoalAccessor = (ApathyMixinTrackTargetGoalAccessor) followTargetGoal;
 
-        logger.debug(
+        ApathyLogger.debug(
             "[{}] Applied {}",
             entity,
             apathyBehaviourType
@@ -200,7 +197,7 @@ public class ApathyMod implements ModInitializer {
             apathyConfig = new ApathyConfig(new HashMap<>());
         }
 
-        logger.info(
+        ApathyLogger.info(
             "Loaded with config: {}",
             apathyConfig
         );
@@ -222,7 +219,7 @@ public class ApathyMod implements ModInitializer {
                             .getRight()
                             .create(type, world);
                     } catch (Exception e) {
-                        logger.error(
+                        ApathyLogger.error(
                             "Creating entity for {}: ",
                             entityTypeToFactory.getLeft(),
                             e

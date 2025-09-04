@@ -1,6 +1,8 @@
 package eu.nk2.apathy.goal;
 
 import eu.nk2.apathy.context.*;
+import eu.nk2.apathy.logging.ApathyLogger;
+
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
@@ -8,8 +10,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
-import org.apache.logging.log4j.LogManager;
+
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.*;
 
@@ -49,7 +52,7 @@ public class ApathyIfItemSelectedActiveTargetGoal extends ActiveTargetGoal<Playe
         this.reactionItemCount = reactionItemCount;
 
         this.onHandStackChangedHandlerId = OnHandStackChangedEventRegistry.INSTANCE.registerOnHandStackChangedHandler((hand, playerUuid, previousStack, currentStack) -> {
-            logger.info(
+            ApathyLogger.debug(
                 "[{}] {} hand stack changed: {}, from: {}, to: {}",
                 this.mob,
                 hand.name(),
@@ -60,7 +63,7 @@ public class ApathyIfItemSelectedActiveTargetGoal extends ActiveTargetGoal<Playe
 
             if (currentStack != null && currentStack.getItem() == this.reactionItem
                 && (this.reactionItemCount <= 0 || currentStack.getCount() == this.reactionItemCount)) {
-                logger.info(
+                ApathyLogger.debug(
                     "[{}] Add to memory: {}",
                     this.mob,
                     playerUuid
@@ -74,7 +77,7 @@ public class ApathyIfItemSelectedActiveTargetGoal extends ActiveTargetGoal<Playe
             if (previousStack != null && previousStack.getItem() == this.reactionItem
                 && currentStack != null && (currentStack.getItem() != this.reactionItem
                 || this.reactionItemCount > 0 && currentStack.getCount() != this.reactionItemCount)) {
-                logger.info(
+                ApathyLogger.debug(
                     "[{}] Remove from memory: {}",
                     this.mob,
                     playerUuid
@@ -85,7 +88,7 @@ public class ApathyIfItemSelectedActiveTargetGoal extends ActiveTargetGoal<Playe
 
         this.onLivingEntityDeadHandlerId = OnLivingEntityDeadEventRegistry.INSTANCE.registerOnLivingEntityDeadHandler((world, livingEntity, damageSource) -> {
             if (this.mob.getId() == livingEntity.getId()) {
-                logger.info(
+                ApathyLogger.debug(
                     "[{}] Unregister goal from events",
                     this.mob
                 );
@@ -112,5 +115,5 @@ public class ApathyIfItemSelectedActiveTargetGoal extends ActiveTargetGoal<Playe
             .filter(playerDistancePair -> playerDistancePair.getRight() <= maximalFollowDistance)
             .min(Comparator.comparing(Pair::getRight))
             .ifPresent(playerDistancePair -> this.targetEntity = playerDistancePair.getLeft());
-    }
+        }
 }

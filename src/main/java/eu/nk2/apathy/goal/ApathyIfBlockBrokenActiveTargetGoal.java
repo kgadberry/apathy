@@ -2,6 +2,8 @@ package eu.nk2.apathy.goal;
 
 import eu.nk2.apathy.context.OnBlockBrokenEventRegistry;
 import eu.nk2.apathy.context.OnLivingEntityDeadEventRegistry;
+import eu.nk2.apathy.logging.ApathyLogger;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -9,8 +11,9 @@ import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Pair;
-import org.apache.logging.log4j.LogManager;
+
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.*;
 
@@ -54,7 +57,7 @@ public class ApathyIfBlockBrokenActiveTargetGoal extends ActiveTargetGoal<Player
                 return;
             }
 
-            logger.info(
+            ApathyLogger.debug(
                 "[{}] Block broken: {} {}",
                 this.mob,
                 playerUuid,
@@ -64,7 +67,7 @@ public class ApathyIfBlockBrokenActiveTargetGoal extends ActiveTargetGoal<Player
                 .getBlock()
                 .getDefaultState()
                 .isOf(this.reactionBlock) && mob.distanceTo(player) <= this.maximalReactionDistance) {
-                logger.info(
+                ApathyLogger.debug(
                     "[{}] Add to memory: {}",
                     this.mob,
                     playerUuid
@@ -78,7 +81,7 @@ public class ApathyIfBlockBrokenActiveTargetGoal extends ActiveTargetGoal<Player
 
         this.onLivingEntityDeadHandlerId = OnLivingEntityDeadEventRegistry.INSTANCE.registerOnLivingEntityDeadHandler((world, livingEntity, damageSource) -> {
             if (this.mob.getId() == livingEntity.getId()) {
-                logger.info(
+                ApathyLogger.debug(
                     "[{}] Unregister goal from events",
                     this.mob
                 );
